@@ -228,9 +228,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ result: parsedResult });
   } catch (error) {
     console.error("Gemini API error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to analyze. Please try again.", details: errorMessage },
+      { error: "Failed to analyze. Please try again." },
       { status: 500 }
     );
   }
