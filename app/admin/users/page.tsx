@@ -20,7 +20,7 @@ export default async function UsersPage() {
 
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, role, created_at")
+    .select("id, role, email, created_at")
     .order("created_at", { ascending: true });
 
   async function updateRole(formData: FormData) {
@@ -49,7 +49,7 @@ export default async function UsersPage() {
           <thead>
             <tr className="border-b border-slate-200 dark:border-slate-700">
               <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide px-6 py-4">
-                User ID
+                User
               </th>
               <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide px-6 py-4">
                 Role
@@ -66,14 +66,19 @@ export default async function UsersPage() {
             {profiles?.map((profile) => (
               <tr key={profile.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                 <td className="px-6 py-4">
-                  <span className="font-mono text-xs text-slate-600 dark:text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-800 dark:text-slate-200">
+                      {profile.email ?? "—"}
+                    </span>
+                    {profile.id === user.id && (
+                      <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
+                        you
+                      </span>
+                    )}
+                  </div>
+                  <span className="font-mono text-xs text-slate-400 dark:text-slate-500">
                     {profile.id}
                   </span>
-                  {profile.id === user.id && (
-                    <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
-                      you
-                    </span>
-                  )}
                 </td>
                 <td className="px-6 py-4">
                   <span className={`text-xs font-medium px-2 py-1 rounded-full ${

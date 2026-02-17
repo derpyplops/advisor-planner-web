@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -206,7 +207,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const prompt = promptFn(input, secondaryInput);
+    let products = secondaryInput || "";
+
+    if (feature === "recommendations") {
+      const supabase = await createClient();
+      const { data } = await supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "product_details")
+        .single();
+
+      const adminProducts = data?.value?.trim() ?? "";
+
+      if (adminProducts && products) {
+        products = `${adminProducts}\n\n---\nAdditional context:\n${products}`;
+      } else if (adminProducts) {
+        products = adminProducts;
+      }
+    }
+
+    const prompt = promptFn(input, products || undefined);
 
     // Use Gemini 3 Flash model
     const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
