@@ -1,16 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { 
+import { useRouter } from "next/navigation";
+import {
   FileText, Users, TrendingUp, Package, Presentation, Star,
-  Mic, MicOff, Loader2, ChevronRight, ArrowLeft
+  Mic, MicOff, Loader2, ChevronRight, ArrowLeft, LogOut
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type Feature = "meeting" | "summary" | "scenario" | "recommendations" | "presentation" | "feedback" | null;
 
 export default function Home() {
+  const router = useRouter();
   const [activeFeature, setActiveFeature] = useState<Feature>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserEmail(user?.email ?? null);
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   const features = [
     {
@@ -70,11 +88,25 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
       <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
-          <Image src="/logo.png" alt="Logo" width={48} height={48} className="rounded-xl" />
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Advisor Planner</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Financial Advisory Training Platform</p>
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Image src="/logo.png" alt="Logo" width={48} height={48} className="rounded-xl" />
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Advisor Planner</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Financial Advisory Training Platform</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {userEmail && (
+              <span className="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">{userEmail}</span>
+            )}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-red-500 dark:hover:text-red-400 transition-colors px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:block">Sign out</span>
+            </button>
           </div>
         </div>
       </header>
