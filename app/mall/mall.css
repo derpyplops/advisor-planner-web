@@ -1,0 +1,52 @@
+.mall-theme {
+  --radius: 0.5rem;
+  --background: oklch(0.18 0.04 260);
+  --foreground: oklch(0.95 0.005 260);
+  --card: oklch(0.22 0.045 260);
+  --card-foreground: oklch(0.95 0.005 260);
+  --popover: oklch(0.22 0.045 260);
+  --popover-foreground: oklch(0.95 0.005 260);
+  --primary: oklch(0.72 0.14 230);
+  --primary-foreground: oklch(0.15 0.04 260);
+  --secondary: oklch(0.26 0.04 260);
+  --secondary-foreground: oklch(0.85 0.02 230);
+  --muted: oklch(0.25 0.035 260);
+  --muted-foreground: oklch(0.65 0.03 250);
+  --accent: oklch(0.28 0.05 260);
+  --accent-foreground: oklch(0.92 0.01 230);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.35 0.04 250);
+  --input: oklch(0.30 0.04 255);
+  --ring: oklch(0.72 0.14 230);
+  --sidebar: oklch(0.16 0.045 260);
+  --sidebar-foreground: oklch(0.90 0.01 230);
+  --sidebar-primary: oklch(0.72 0.14 230);
+  --sidebar-primary-foreground: oklch(0.15 0.04 260);
+  --sidebar-accent: oklch(0.24 0.05 255);
+  --sidebar-accent-foreground: oklch(0.92 0.01 230);
+  --sidebar-border: oklch(0.30 0.04 255);
+  --sidebar-ring: oklch(0.72 0.14 230);
+}
+
+/* Blueprint grid pattern overlay */
+.mall-theme .blueprint-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+}
+
+.mall-theme .blueprint-card {
+  position: relative;
+}
+.mall-theme .blueprint-card::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px; right: -1px; bottom: -1px;
+  border: 1px solid oklch(0.72 0.14 230 / 0.15);
+  border-radius: inherit;
+  pointer-events: none;
+}
