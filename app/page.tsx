@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   FileText, Users, TrendingUp, Package, Presentation, Star,
-  Mic, MicOff, Loader2, ChevronRight, ArrowLeft, LogOut
+  Mic, MicOff, Loader2, ChevronRight, ArrowLeft, LogOut,
+  UserCircle, Calendar, Heart, Target, Inbox,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,6 +15,7 @@ type Feature = "meeting" | "summary" | "scenario" | "recommendations" | "present
 export default function Home() {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState<Feature>(null);
+  const [activeView, setActiveView] = useState<"features" | "leads">("features");
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,9 +79,9 @@ export default function Home() {
 
   if (activeFeature) {
     return (
-      <FeatureView 
-        feature={activeFeature} 
-        onBack={() => setActiveFeature(null)} 
+      <FeatureView
+        feature={activeFeature}
+        onBack={() => setActiveFeature(null)}
       />
     );
   }
@@ -109,64 +111,190 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        {/* Tab bar */}
+        <div className="max-w-7xl mx-auto px-6 flex gap-1 border-t border-slate-200 dark:border-slate-700">
+          <button
+            onClick={() => setActiveView("features")}
+            className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeView === "features"
+                ? "border-primary text-primary"
+                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            Features
+          </button>
+          <button
+            onClick={() => setActiveView("leads")}
+            className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
+              activeView === "leads"
+                ? "border-primary text-primary"
+                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Inbox size={14} />
+            Leads
+          </button>
+        </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-slate-900 dark:text-white mb-4">
-            Train Smarter, Advise Better
-          </h2>
-          <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            AI-powered tools to help financial advisors structure meetings, plan scenarios, 
-            and improve their client interactions
-          </p>
-        </div>
+      {activeView === "leads" ? (
+        <LeadsView />
+      ) : (
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Train Smarter, Advise Better
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              AI-powered tools to help financial advisors structure meetings, plan scenarios,
+              and improve their client interactions
+            </p>
+          </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <button
-                key={feature.id}
-                onClick={() => setActiveFeature(feature.id)}
-                className="group bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary hover:shadow-xl transition-all duration-300 text-left"
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`${feature.color} w-14 h-14 rounded-xl flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                    <Icon size={28} />
+          {/* Feature Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <button
+                  key={feature.id}
+                  onClick={() => setActiveFeature(feature.id)}
+                  className="group bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-primary hover:shadow-xl transition-all duration-300 text-left"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={`${feature.color} w-14 h-14 rounded-xl flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                      <Icon size={28} />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white group-hover:text-primary transition-colors mb-2 flex items-center gap-2">
+                        {feature.title}
+                        <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{feature.description}</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-slate-900 dark:text-white group-hover:text-primary transition-colors mb-2 flex items-center gap-2">
-                      {feature.title}
-                      <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{feature.description}</p>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Stats */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center">
-            <div className="text-4xl font-bold text-primary mb-2">6</div>
-            <div className="text-slate-500 dark:text-slate-400">AI-Powered Features</div>
+          {/* Stats */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center">
+              <div className="text-4xl font-bold text-primary mb-2">6</div>
+              <div className="text-slate-500 dark:text-slate-400">AI-Powered Features</div>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center">
+              <div className="text-4xl font-bold text-emerald-500 mb-2">Real-time</div>
+              <div className="text-slate-500 dark:text-slate-400">Analysis & Feedback</div>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center">
+              <div className="text-4xl font-bold text-purple-500 mb-2">Audio</div>
+              <div className="text-slate-500 dark:text-slate-400">Recording & Transcription</div>
+            </div>
           </div>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center">
-            <div className="text-4xl font-bold text-emerald-500 mb-2">Real-time</div>
-            <div className="text-slate-500 dark:text-slate-400">Analysis & Feedback</div>
-          </div>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 text-center">
-            <div className="text-4xl font-bold text-purple-500 mb-2">Audio</div>
-            <div className="text-slate-500 dark:text-slate-400">Recording & Transcription</div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
+  );
+}
+
+type Lead = {
+  id: number;
+  name: string | null;
+  age: number | null;
+  family_info: string | null;
+  client_request: string | null;
+  created_at: string;
+};
+
+function LeadsView() {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/leads")
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setLeads(data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-16 flex justify-center">
+        <Loader2 size={28} className="animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!leads.length) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-24 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-800 mb-6">
+          <Inbox size={36} className="text-slate-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">No leads yet</h2>
+        <p className="text-slate-500 dark:text-slate-400">
+          Run a Meeting Analysis and a client profile will be created automatically.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-10">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">Leads</h2>
+        <p className="text-slate-500 dark:text-slate-400">{leads.length} client profile{leads.length !== 1 ? "s" : ""} extracted from meeting analyses</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {leads.map((lead) => (
+          <div key={lead.id} className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col gap-4">
+            {/* Name + date */}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                  <UserCircle size={22} className="text-blue-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900 dark:text-white leading-tight">
+                    {lead.name ?? "Unknown client"}
+                  </p>
+                  <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+                    <Calendar size={11} />
+                    {new Date(lead.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+                  </p>
+                </div>
+              </div>
+              {lead.age != null && (
+                <span className="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                  Age {lead.age}
+                </span>
+              )}
+            </div>
+
+            {/* Family info */}
+            {lead.family_info && (
+              <div className="flex gap-2.5">
+                <Heart size={14} className="text-rose-400 shrink-0 mt-0.5" />
+                <p className="text-sm text-slate-600 dark:text-slate-300">{lead.family_info}</p>
+              </div>
+            )}
+
+            {/* Client request */}
+            {lead.client_request && (
+              <div className="flex gap-2.5">
+                <Target size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                <p className="text-sm text-slate-600 dark:text-slate-300">{lead.client_request}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -177,6 +305,8 @@ function FeatureView({ feature, onBack }: { feature: Feature; onBack: () => void
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [savedLeads, setSavedLeads] = useState<Lead[]>([]);
+  const [showLeadPicker, setShowLeadPicker] = useState(false);
 
   const featureConfig: Record<string, { title: string; placeholder: string; secondaryPlaceholder?: string; color: string }> = {
     meeting: {
@@ -217,12 +347,21 @@ function FeatureView({ feature, onBack }: { feature: Feature; onBack: () => void
 
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (feature === "recommendations") {
+      fetch("/api/leads")
+        .then((r) => r.json())
+        .then((data) => { if (Array.isArray(data)) setSavedLeads(data); })
+        .catch(() => {});
+    }
+  }, [feature]);
+
   const handleAnalyze = async () => {
     if (!input.trim()) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
@@ -240,6 +379,25 @@ function FeatureView({ feature, onBack }: { feature: Feature; onBack: () => void
         throw new Error(data.error || "Analysis failed");
       }
 
+      const analysisResult = typeof data.result === "object" ? data.result : null;
+
+      // Auto-save meeting transcript and create lead profile
+      if (feature === "meeting" && input.trim()) {
+        const saveTranscript = fetch("/api/transcriptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcript: input, analysis: analysisResult }),
+        }).then((r) => r.json()).catch(() => null);
+
+        saveTranscript.then((saved) => {
+          fetch("/api/leads", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ transcript: input, transcriptionId: saved?.id ?? null }),
+          }).catch(() => {});
+        });
+      }
+
       // Format result for display
       if (typeof data.result === "object") {
         setResult(JSON.stringify(data.result, null, 2));
@@ -251,6 +409,16 @@ function FeatureView({ feature, onBack }: { feature: Feature; onBack: () => void
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const loadLeadAsClientNeeds = (lead: Lead) => {
+    const parts: string[] = [];
+    if (lead.name) parts.push(`Client: ${lead.name}`);
+    if (lead.age != null) parts.push(`Age: ${lead.age}`);
+    if (lead.family_info) parts.push(`Family: ${lead.family_info}`);
+    if (lead.client_request) parts.push(`Goals: ${lead.client_request}`);
+    setInput(parts.join("\n"));
+    setShowLeadPicker(false);
   };
 
 
@@ -373,6 +541,61 @@ function FeatureView({ feature, onBack }: { feature: Feature; onBack: () => void
                       <MicOff size={20} />
                       Stop Recording
                     </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Lead profile picker for recommendations */}
+            {feature === "recommendations" && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowLeadPicker(!showLeadPicker)}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-cyan-500/40 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/5 transition-colors"
+                >
+                  <UserCircle size={15} />
+                  Load from client profile
+                  {savedLeads.length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 rounded-full bg-cyan-500/15 text-xs font-semibold">
+                      {savedLeads.length}
+                    </span>
+                  )}
+                </button>
+                {showLeadPicker && (
+                  <div className="absolute z-20 top-11 left-0 w-96 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden">
+                    <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Client Profiles
+                    </div>
+                    {savedLeads.length === 0 ? (
+                      <div className="px-4 py-6 text-sm text-slate-400 text-center">
+                        No profiles yet — run a Meeting Analysis first.
+                      </div>
+                    ) : (
+                      <ul className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/50">
+                        {savedLeads.map((lead) => (
+                          <li key={lead.id}>
+                            <button
+                              type="button"
+                              onClick={() => loadLeadAsClientNeeds(lead)}
+                              className="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                            >
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                                  {lead.name ?? "Unknown client"}
+                                </p>
+                                {lead.age != null && (
+                                  <span className="text-xs text-slate-400">Age {lead.age}</span>
+                                )}
+                              </div>
+                              {lead.client_request && (
+                                <p className="text-xs text-slate-400 line-clamp-1">{lead.client_request}</p>
+                              )}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 )}
               </div>
